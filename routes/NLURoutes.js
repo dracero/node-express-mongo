@@ -1,6 +1,6 @@
 import express from "express";
 import BaseDeDatos from "../src/BaseDeDatos.js";
-import ExcepcionNameAlreadyExists from "../src/BaseDeDatos.js"
+import ErrorNameAlreadyExists from "../src/BaseDeDatos.js"
 import {get_nlu_structure,
   add_nlu_structure,
   put_nlu_structure,
