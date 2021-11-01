@@ -1,17 +1,15 @@
 import mongoose from "mongoose";
 import NLU from "../models/NLU.js"
 
-/*
-function ExcepcionNameAlreadyExists(name) {
-    this.name = name;
-    this.mensaje = "The name " + name + " already exists";
-    this.toString = function() {
-       return this.name + this.mensaje
-    };
-    const error = new Error(this.mensaje);
-    return error;
+class ErrorNameAlreadyExists extends Error {
+    
+    constructor(name) {
+        
+        super();
+        this.name = 'Error: ' + name + ' ya existe.';
+        Error.captureStackTrace(this, this.constructor);
+    }
 }
-*/
 
 class BaseDeDatos {
     
@@ -19,58 +17,40 @@ class BaseDeDatos {
         this.NLUModel = NLU;
     }
 
-    get_nlu_structure () {
+    async get_nlu_structure () {
         
         const nlu_structure = this.NLUModel.find({});
         return nlu_structure;
     }
+    
+    async add_nlu_structure (name, text) {
 
-/*    async add_nlu_structure(name, text) {
-        const data = await this.findOne({ name: name });
-        if (data) {
-            console.log("data = ", data);
-            throw new ExcepcionNameAlreadyExists(findOne);
-        }
-        console.log("llega");
+        let alreadyExists;
 
-        const obj = JSON.stringify({name: name, text: text});
-        const nlu_structure = new this.NLUModel(JSON.parse(obj));
-        nlu_structure.save();
-        return nlu_structure;
-    }*/
-
-    add_nlu_structure (name, text) {
-
-        const names = [];
-        const data = this.NLUModel.find({name: name}, (err, names) => {
-            
-            if (err) {
-              return;
-            }
-
-            if (names.length) {
-
-                console.log("Error: ", name, " ya existe.")
-
-                //throw 'un error';
-                //throw new ExcepcionNameAlreadyExists(name);
+        await this.NLUModel.findOne({ name: name }).select("name").lean().then(result => {
+                
+            if (result) {
+                alreadyExists = true;
                 return;
 
             } else {
-              //console.log("Estructura nueva, se agrega a la base de datos");
+
+                console.log("Estructura nueva, se agrega a la base de datos.");
+                alreadyExists = false;                
+                const obj = JSON.stringify({name: name, text: text});
+                const nlu_structure = new this.NLUModel(JSON.parse(obj));
+                nlu_structure.save();
+                return nlu_structure;
             }
-        })
+        });
 
+        if(alreadyExists) {
 
-        console.log("llega");
-
-        const obj = JSON.stringify({name: name, text: text});
-        const nlu_structure = new this.NLUModel(JSON.parse(obj));
-        nlu_structure.save();
-        return nlu_structure;
+            throw new ErrorNameAlreadyExists(name);
+        }
     }
 
-    put_nlu_structure (name, text, id) {
+    async put_nlu_structure (name, text, id) {
         const obj = JSON.stringify({name: name, text: text});
         let nlu_structure = new this.NLUModel(JSON.parse(obj));
         
@@ -87,7 +67,7 @@ class BaseDeDatos {
         return nlu_structure;
     }
 
-    delete_nlu_structure (id) {
+    async delete_nlu_structure (id) {
         return this.NLUModel.findByIdAndDelete(id);
     }
 }
