@@ -16,7 +16,6 @@ const add_nlu_structure = async (req, res, next) => {
         const nlu_structure = await baseDeDatos.add_nlu_structure(req.query.name, req.query.text)
         res.send(nlu_structure);
     } catch (error) {
-        console.log("catchea");
         res.status(500).send(error);
     }
 }
