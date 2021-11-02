@@ -30,6 +30,7 @@ class BaseDeDatos {
         await this.NLUModel.findOne({ name: name }).select("name").lean().then(result => {
                 
             if (result) {
+                console.log("Error: " + name + " ya existe.");
                 alreadyExists = true;
                 return;
 
