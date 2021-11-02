@@ -23,30 +23,39 @@ class BaseDeDatos {
         return nlu_structure;
     }
     
+    async nlu_structure_name_exists(name) {
+        return this.NLUModel.findOne({ name: name })
+                            .select("name")
+                            .lean()
+                            .then(result => {
+                                return result != null;
+                            });
+    }
+    
     async add_nlu_structure (name, text) {
+        const name_exists = await this.nlu_structure_name_exists(name)
+        if (name_exists){
+            console.log("Error: " + name + " ya existe.");
+            throw new ErrorNameAlreadyExists(name);
+        }
 
-        await this.NLUModel.findOne({ name: name })
-            .select("name")
-            .lean()
-            .then(result => {
-                
-            if (result) {
-                console.log("Error: " + name + " ya existe.");
-                throw new ErrorNameAlreadyExists(name);
-            }
-
-            console.log("Estructura nueva, se agrega a la base de datos.");
-            const obj = JSON.stringify({name: name, text: text});
-            const nlu_structure = new this.NLUModel(JSON.parse(obj));
-            nlu_structure.save();
-            return nlu_structure;
-            });
+        console.log("Estructura nueva, se agrega a la base de datos.");
+        const obj = JSON.stringify({name: name, text: text});
+        const nlu_structure = new this.NLUModel(JSON.parse(obj));
+        nlu_structure.save();
+        return nlu_structure;
     }
 
     async put_nlu_structure (name, text, id) {
+        const name_exists = await this.nlu_structure_name_exists(name)
+        if (name_exists){
+            console.log("Error: " + name + " ya existe.");
+            throw new ErrorNameAlreadyExists(name);
+        }
+
         const obj = JSON.stringify({name: name, text: text});
         let nlu_structure = new this.NLUModel(JSON.parse(obj));
-        
+
         this.NLUModel.findByIdAndUpdate(id, JSON.parse(obj), {new: true},  function (err, nlu_structure) {
             if (err){
                 console.log(err)
