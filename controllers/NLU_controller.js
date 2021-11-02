@@ -1,4 +1,4 @@
-import BaseDeDatos from "../src/BaseDeDatos.js";
+import BaseDeDatos from "../dao/BaseDeDatos.js";
 let baseDeDatos = new BaseDeDatos();
 
 const get_nlu_structure = async (req, res, next) => {
