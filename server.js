@@ -10,7 +10,8 @@ mongoose.connect(
   "mongodb+srv://euge:1234@cluster0.b2f7j.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
   {
     useNewUrlParser: true, 
-    useUnifiedTopology: true 
+    useUnifiedTopology: true, 
+    useFindAndModify: false
   }
 );
 //si la base de datos no existe Mongo la crea
