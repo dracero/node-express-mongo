@@ -1,9 +1,10 @@
 import express from "express";
 import mongoose from "mongoose";;
 import foodRouter from "./routes/NLURoutes.js";
-
+import cors from 'cors';
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 //solo poner useNewUrlParser y useUnifiedTopology porque las otras están deprecadas
 mongoose.connect(
