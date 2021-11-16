@@ -12,5 +12,5 @@ router.post('/nlu_structure', add_nlu_structure);
 router.put('/nlu_structure', put_nlu_structure);
 router.delete('/nlu_structure/:id', delete_nlu_structure);
 
-
 export default router;
+
