@@ -92,6 +92,13 @@ class BaseDeDatos {
     }
 
     async put_nlu_structure (name, text, id) {
+        /*
+        const name_exists = await this.nlu_structure_name_exists(name)
+        if (name_exists){
+            console.log("Error: " + name + " ya existe.");
+            throw new ErrorNameAlreadyExists(name);
+        }
+        */
 
         const obj = JSON.stringify({name: name, text: text});
         let nlu_structure = new this.NLUModel(JSON.parse(obj));
@@ -99,7 +106,7 @@ class BaseDeDatos {
         await this.NLUModel.findByIdAndUpdate(id, JSON.parse(obj), {new: true},  function (err, nlu_structure) {
             
             if (err){
-                console.log("Error: ", error.response.data.name);
+                console.log("Error: ", err.response.data.name);
             }
             else{
                 console.log("Updated id: ", id);
