@@ -106,7 +106,7 @@ class BaseDeDatos {
         await this.NLUModel.findByIdAndUpdate(id, JSON.parse(obj), {new: true},  function (err, nlu_structure) {
             
             if (err){
-                console.log("Error: ", err.response.data.name);
+                console.log("Error: ", err.toString());
             }
             else{
                 console.log("Updated id: ", id);
