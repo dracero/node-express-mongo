@@ -11,12 +11,12 @@ class ErrorNameAlreadyExists extends Error {
     }
 }
 
-class ErrorNameIsEmpty extends Error {
+class ErrorFieldIsEmpty extends Error {
     
-    constructor() {
+    constructor(field) {
         
         super();
-        this.name = 'Error: no se ha ingresado un nombre.';
+        this.name = 'Error: no se ha ingresado ' + field + '.';
         Error.captureStackTrace(this, this.constructor);
     }
 }
@@ -53,12 +53,6 @@ class BaseDeDatos {
                             });
     }
 
-    /*
-    async nlu_structure_name_is_empty(name) {
-        return (!name);
-    }
-    */
-
     async nlu_structure_id_exists(id) {
 
         return this.NLUModel.findOne({ id: id })
@@ -72,12 +66,15 @@ class BaseDeDatos {
 
     async add_nlu_structure (name, text) {
 
-        /*
-        if (await this.nlu_structure_name_is_empty(name)) {
+        if (name == null || name === '') {
             console.log("Error: nombre vacío.");
-            throw new ErrorNameIsEmpty();
+            throw new ErrorFieldIsEmpty("nombre");
         }
-        */
+
+        if (text == null || text === '') {
+            console.log("Error: texto vacío.");
+            throw new ErrorFieldIsEmpty("texto");
+        }
         
         if (await this.nlu_structure_name_exists(name)){
             console.log("Error: " + name + " ya existe.");
@@ -92,13 +89,34 @@ class BaseDeDatos {
     }
 
     async put_nlu_structure (name, text, id) {
-        /*
-        const name_exists = await this.nlu_structure_name_exists(name)
-        if (name_exists){
+
+        if (id == null || id === '') {
+            console.log("Error: ID vacía.");
+            throw new ErrorFieldIsEmpty("id");
+        }
+        
+        if(name === '') {
+            
+            name = null;
+        }
+        
+        if(text === '') {
+            
+            text = null;            
+        }
+        
+        let name_is_empty = (name == null);
+        let text_is_empty = (text == null);
+        
+        if (name_is_empty && text_is_empty) {
+            console.log("Error: nombre y texto vacío.");
+            throw new ErrorFieldIsEmpty("nombre y texto");
+        }
+        
+        if (await this.nlu_structure_name_exists(name)){
             console.log("Error: " + name + " ya existe.");
             throw new ErrorNameAlreadyExists(name);
         }
-        */
 
         const obj = JSON.stringify({name: name, text: text});
         let nlu_structure = new this.NLUModel(JSON.parse(obj));
@@ -117,6 +135,11 @@ class BaseDeDatos {
     }
 
     async delete_nlu_structure (id) {
+
+        if (id == null || id === '') {
+            console.log("Error: ID vacía.");
+            throw new ErrorFieldIsEmpty("id");
+        }
 
         return this.NLUModel.findByIdAndDelete(id);
     }
