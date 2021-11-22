@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import NLU from "../models/NLU.js"
 
 class ErrorNameAlreadyExists extends Error {
@@ -37,22 +36,28 @@ class BaseDeDatos {
         this.NLUModel = NLU;
     }
 
-    async get_nlu_structure () {
-        
+    async get_nlu_structure () {        
         const nlu_structure = this.NLUModel.find({});
         return nlu_structure;
-    }
+    }//fin get total
+
+    async get_nlu_structure_name (nombre) {        
+        return this.NLUModel.findOne({name:nombre})
+        .lean().
+        then(result => { return result});
+    }//fin get por nombre
+
     
     async nlu_structure_name_exists(name) {
-        
-        return this.NLUModel.findOne({ name: name })
+        return this.NLUModel.findOne({ name: name})
                             .select("name")
                             .lean()
                             .then(result => {
                                 return result != null;
                             });
     }
-
+  
+    // al id no tiene que ser nunca manipulado por el usuario
     async nlu_structure_id_exists(id) {
 
         return this.NLUModel.findOne({ id: id })
@@ -63,7 +68,7 @@ class BaseDeDatos {
                                 return result != null;
                             });
     }
-
+   //********** */
     async add_nlu_structure (name, text) {
 
         if (name == null || name === '') {
@@ -89,7 +94,8 @@ class BaseDeDatos {
     }
 
     async put_nlu_structure (name, text, id) {
-
+    // el put tiene que ir dentro de un try catch para  que no tire error con el unique del nombre
+    try {
         if (id == null || id === '') {
             console.log("Error: ID vacía.");
             throw new ErrorFieldIsEmpty("id");
@@ -113,9 +119,13 @@ class BaseDeDatos {
             throw new ErrorFieldIsEmpty("nombre y texto");
         }
         
-        if (await this.nlu_structure_name_exists(name)){
-            console.log("Error: " + name + " ya existe.");
-            throw new ErrorNameAlreadyExists(name);
+        let valores = await this.get_nlu_structure_name(name)
+        //await this.get_nlu_structure_name (name)
+        if (valores){
+            if (valores.name == name & valores.text==text){
+                console.log("Error: " + name + " ya existe.");
+                throw new ErrorNameAlreadyExists(name);
+            }
         }
 
         const obj = JSON.stringify({name: name, text: text});
@@ -132,7 +142,11 @@ class BaseDeDatos {
         });
 
         return nlu_structure;
-    }
+     }catch{
+        throw new ErrorNameAlreadyExists(name);
+     }
+    } 
+    //fin put
 
     async delete_nlu_structure (id) {
 

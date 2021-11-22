@@ -12,12 +12,15 @@ mongoose.connect(
   {
     useNewUrlParser: true, 
     useUnifiedTopology: true, 
-    useFindAndModify: false
+    useFindAndModify: false,
+    useCreateIndex: true //hay que agregar esto para que sea único el nombre
   }
 );
 //si la base de datos no existe Mongo la crea
 app.use(foodRouter);
 
-app.listen(3000, () => {
-  console.log("Server is running...");
+const PORT = process.env.PORT || 8080
+
+app.listen(PORT, () => {
+  console.log(`servidor escuchando en http://localhost:${PORT}`);
 });
