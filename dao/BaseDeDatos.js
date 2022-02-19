@@ -133,7 +133,7 @@ class BaseDeDatos {
             
             if (valores){
                 if (valores.name == name & valores.text == text){
-                    console.log("Error: " + name + " ya existe.");
+                    console.log("Error: " + name + " ya existe en la base de datos.");
                     throw new ErrorNameAlreadyExists();
                 }
             }
