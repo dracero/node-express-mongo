@@ -102,7 +102,7 @@ class BaseDeDatos {
         return nlu_structure;
     }
 
-    async put_nlu_structure (name, text, id) {
+    async put_nlu_structure (id, name, text) {
     // el put tiene que ir dentro de un try catch para  que no tire error con el unique del nombre
    
         try {
@@ -130,9 +130,9 @@ class BaseDeDatos {
             }
             
             let valores = await this.get_nlu_structure_name(name);
-
+            
             if (valores){
-                if (valores.name == name & valores.text==text){
+                if (valores.name == name & valores.text == text){
                     console.log("Error: " + name + " ya existe.");
                     throw new ErrorNameAlreadyExists();
                 }
